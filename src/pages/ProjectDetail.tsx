@@ -1,19 +1,37 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, ExternalLink, Github, Tag, Share2, CheckCircle, Clock, Zap } from 'lucide-react';
+import { ArrowLeft, Calendar, ExternalLink, Github, Tag, Share2, CheckCircle, Clock, Zap, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { projects } from '@/data/content';
+import { useItem, transformProject } from '@/hooks/useApi';
 import { cn } from '@/lib/utils';
 import ReactMarkdown from 'react-markdown';
 
 export default function ProjectDetail() {
   const { id } = useParams();
-  const project = projects.find(p => p.id === id);
+  const { data: apiData, isLoading, error } = useItem(id);
 
-  if (!project) {
+  // Transform the data if it exists
+  const project = apiData ? transformProject(apiData) : null;
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={() => {}} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading project...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle error or not found
+  if (error || !project) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar onSearch={() => {}} />

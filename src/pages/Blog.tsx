@@ -1,25 +1,57 @@
 
 import { useState, useMemo } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Loader2 } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ContentCard } from '@/components/ContentCard';
-import { blogPosts } from '@/data/content';
+import { Button } from '@/components/ui/button';
+import { useBlogPosts, transformBlogPost } from '@/hooks/useApi';
+import { BlogPost } from '@/types';
 
 export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch blog posts from API
+  const { data: apiData, isLoading, error } = useBlogPosts({
+    search: searchQuery || undefined,
+  });
+
   const filteredPosts = useMemo(() => {
-    if (!searchQuery) return blogPosts.map(post => ({ ...post, type: 'blog' as const }));
+    if (!apiData) return [];
     
-    return blogPosts
-      .filter(post =>
-        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-      .map(post => ({ ...post, type: 'blog' as const }));
-  }, [searchQuery]);
+    return apiData.map((post: any) => ({
+      ...transformBlogPost(post),
+      type: 'blog' as const
+    }));
+  }, [apiData]);
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={setSearchQuery} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading blog posts...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={setSearchQuery} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <p className="text-red-500 mb-4">Failed to load blog posts. Please try again later.</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

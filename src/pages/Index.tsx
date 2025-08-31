@@ -1,22 +1,49 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Code2, BookOpen } from 'lucide-react';
+import { ArrowRight, Sparkles, Code2, BookOpen, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ContentCard } from '@/components/ContentCard';
 import { FilterTabs } from '@/components/FilterTabs';
-import { allContent } from '@/data/content';
-import { FilterOption } from '@/types';
+import { useItems, transformBlogPost, transformProject } from '@/hooks/useApi';
+import { FilterOption, BlogPost, Project } from '@/types';
+
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
+  
+  // Fetch data from API
+  const { data: apiData, isLoading, error } = useItems({
+    search: searchQuery || undefined,
+    type: activeFilter !== 'all' ? activeFilter : undefined,
+  });
+
+  // Transform and memoize content
+  const allContent = useMemo(() => {
+    if (!apiData) return [];
+    
+    return apiData.map((item: any) => {
+      if (item.type === 'blog') {
+        return { ...transformBlogPost(item), type: 'blog' as const };
+      } else {
+        return { ...transformProject(item), type: 'project' as const };
+      }
+    });
+  }, [apiData]);
+
   const filteredContent = useMemo(() => {
     let filtered = allContent;
 
-    // Apply search filter
+    // Apply search filter (additional client-side filtering if needed)
     if (searchQuery) {
-      filtered = filtered.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || ('excerpt' in item ? item.excerpt : item.description).toLowerCase().includes(searchQuery.toLowerCase()) || (item.type === 'blog' ? item.tags : item.technologies).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
+      filtered = filtered.filter(item => 
+        item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        ('excerpt' in item ? item.excerpt : item.description).toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (item.type === 'blog' ? item.tags : item.technologies).some(tag => 
+          tag.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
     }
 
     // Apply category filter
@@ -24,13 +51,47 @@ const Index = () => {
       filtered = filtered.filter(item => item.type === activeFilter);
     }
     return filtered;
-  }, [searchQuery, activeFilter]);
-  const featuredContent = useMemo(() => allContent.filter(item => 'featured' in item && item.featured).slice(0, 2), []);
+  }, [allContent, searchQuery, activeFilter]);
+
+  const featuredContent = useMemo(() => 
+    allContent.filter(item => 'featured' in item && item.featured).slice(0, 2), 
+    [allContent]
+  );
+  
   const counts = useMemo(() => ({
     all: allContent.length,
     blog: allContent.filter(item => item.type === 'blog').length,
     project: allContent.filter(item => item.type === 'project').length
-  }), []);
+  }), [allContent]);
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={setSearchQuery} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading content...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={setSearchQuery} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <p className="text-red-500 mb-4">Failed to load content. Please try again later.</p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return <div className="min-h-screen bg-background">
       <Navbar onSearch={setSearchQuery} />
       
@@ -69,7 +130,13 @@ const Index = () => {
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {featuredContent.map(content => <ContentCard key={content.id} content={content} featured />)}
+              {featuredContent.map(content => (
+                <ContentCard 
+                  key={content.id} 
+                  content={content as (BlogPost | Project) & { type: 'blog' | 'project' }} 
+                  featured 
+                />
+              ))}
             </div>
           </section>}
 
@@ -86,7 +153,12 @@ const Index = () => {
           
           {/* Content Grid */}
           {filteredContent.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredContent.map(content => <ContentCard key={content.id} content={content} />)}
+              {filteredContent.map(content => (
+                <ContentCard 
+                  key={content.id} 
+                  content={content as (BlogPost | Project) & { type: 'blog' | 'project' }} 
+                />
+              ))}
             </div> : <div className="text-center py-12">
               <Code2 className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
               <h3 className="text-xl font-semibold mb-2">No content found</h3>

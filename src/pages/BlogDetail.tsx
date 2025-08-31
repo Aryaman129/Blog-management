@@ -1,18 +1,36 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, User, Tag, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Tag, Share2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
-import { blogPosts } from '@/data/content';
+import { useItem, transformBlogPost } from '@/hooks/useApi';
 import ReactMarkdown from 'react-markdown';
 
 export default function BlogDetail() {
   const { id } = useParams();
-  const post = blogPosts.find(p => p.id === id);
+  const { data: apiData, isLoading, error } = useItem(id);
 
-  if (!post) {
+  // Transform the data if it exists
+  const post = apiData ? transformBlogPost(apiData) : null;
+
+  // Handle loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={() => {}} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading blog post...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Handle error or not found
+  if (error || !post) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar onSearch={() => {}} />

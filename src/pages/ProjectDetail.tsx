@@ -1,4 +1,3 @@
-
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, ExternalLink, Github, Tag, Share2, CheckCircle, Clock, Zap, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -58,7 +57,9 @@ export default function ProjectDetail() {
     planned: "text-blue-400 bg-blue-500/20 border-blue-500/30",
   };
 
-  const StatusIcon = statusIcons[project.status];
+  // Ensure status exists and is valid, provide fallback
+  const projectStatus = project.status || 'planned';
+  const StatusIcon = statusIcons[projectStatus];
 
   return (
     <div className="min-h-screen bg-background">
@@ -86,10 +87,10 @@ export default function ProjectDetail() {
               
               <Badge 
                 variant="secondary" 
-                className={cn("flex items-center space-x-1 hover:scale-110 transition-transform duration-300", statusColors[project.status])}
+                className={cn("flex items-center space-x-1 hover:scale-110 transition-transform duration-300", statusColors[projectStatus])}
               >
                 <StatusIcon className="h-3 w-3" />
-                <span>{project.status.replace('-', ' ')}</span>
+                <span>{projectStatus.replace('-', ' ')}</span>
               </Badge>
             </div>
             

@@ -80,14 +80,14 @@ export function ContentCard({ content, featured = false }: ContentCardProps) {
             <Badge 
               key={item} 
               variant="secondary" 
-              className="text-xs bg-surface hover:bg-surface-elevated transition-colors"
+              className="text-xs bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors"
             >
               <Tag className="h-3 w-3 mr-1" />
               {item}
             </Badge>
           ))}
           {(isBlog ? blog.tags : project.technologies).length > 3 && (
-            <Badge variant="secondary" className="text-xs bg-surface">
+            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
               +{(isBlog ? blog.tags : project.technologies).length - 3} more
             </Badge>
           )}

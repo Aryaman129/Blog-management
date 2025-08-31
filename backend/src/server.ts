@@ -30,7 +30,7 @@ app.use(helmet({
 // CORS configuration
 const allowedOrigins = process.env.CORS_ORIGIN 
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : ['http://localhost:8080'];
+  : ['http://localhost:8080', 'https://your-app.vercel.app'];
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allowed?: boolean) => void) => {

@@ -138,8 +138,8 @@ const Index = () => {
               {featuredContent.map(content => (
                 <ContentCard 
                   key={content.id} 
-                  item={content as BlogPost | Project}
-                  type={content.type}
+                  content={content}
+                  featured={true}
                 />
               ))}
             </div>
@@ -161,8 +161,7 @@ const Index = () => {
               {filteredContent.map(content => (
                 <ContentCard 
                   key={content.id} 
-                  item={content as BlogPost | Project}
-                  type={content.type}
+                  content={content}
                 />
               ))}
             </div> : <div className="text-center py-12">

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, User, Tag, ExternalLink, Github, CheckCircle, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -17,8 +16,8 @@ export function ContentCard({ content, featured = false }: ContentCardProps) {
   const project = content as Project;
   const blog = content as BlogPost;
 
-  // Use slug for the path
-  const itemSlug = typeof content.slug === 'string' ? content.slug : String(content.slug);
+  // Use slug if available, otherwise fallback to id
+  const itemSlug = content.slug || (typeof content.id === 'string' ? content.id : String(content.id));
   const linkPath = isBlog ? `/blog/${itemSlug}` : `/project/${itemSlug}`;
 
   const statusIcons = {

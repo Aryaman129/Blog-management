@@ -386,18 +386,32 @@ class ApiClient {
     const url = `${this.baseURL}${endpoint}`;
     
     const config: RequestInit = {
+      ...options,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
-      ...options,
     };
 
     try {
       const response = await fetch(url, config);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Try to get the error message from the response body
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+          if (errorData.error) {
+            errorMessage += ` - ${errorData.error}`;
+          }
+        } catch (jsonError) {
+          // If JSON parsing fails, use the status message
+          errorMessage = `HTTP error! status: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();
@@ -490,7 +504,9 @@ class ApiClient {
         item.id === slug || 
         item.slug === slug ||
         String(item.id) === slug ||
-        (item.slug && item.slug.toLowerCase() === slug.toLowerCase())
+        (item.slug && item.slug.toLowerCase() === slug.toLowerCase()) ||
+        item.id === slug.toString() ||
+        (typeof slug === 'string' && item.id === parseInt(slug).toString())
       );
       
       console.log('Found fallback item:', item);
@@ -528,6 +544,9 @@ class ApiClient {
 
   // Blog post methods
   async createBlogPost(blogPost: any, token: string): Promise<ApiResponse<any>> {
+    console.log('API Client - Creating blog post:', blogPost);
+    console.log('API Client - Using token:', token ? `${token.substring(0, 20)}...` : 'No token');
+    
     return this.request<any>('/blog', {
       method: 'POST',
       headers: {

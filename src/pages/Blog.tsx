@@ -87,8 +87,7 @@ export default function Blog() {
               {filteredPosts.map((post) => (
                 <ContentCard 
                   key={post.id} 
-                  item={post}
-                  type="blog"
+                  content={{ ...post, type: 'blog' as const }}
                 />
               ))}
             </div>

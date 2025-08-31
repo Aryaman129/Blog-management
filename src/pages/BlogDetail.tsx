@@ -10,10 +10,26 @@ import ReactMarkdown from 'react-markdown';
 
 export default function BlogDetail() {
   const { slug } = useParams();
+  
+  // Don't make API call if slug is undefined
   const { data: apiData, isLoading, error } = useItem(slug);
 
   // Transform the data if it exists
   const post = apiData ? transformBlogPost(apiData) : null;
+
+  // Handle missing slug
+  if (!slug) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar onSearch={() => {}} />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-2xl font-bold mb-4">Blog post not found</h1>
+          <p className="text-muted-foreground">The requested blog post could not be found.</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   // Handle loading state
   if (isLoading) {

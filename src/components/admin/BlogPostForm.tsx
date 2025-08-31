@@ -62,6 +62,9 @@ const BlogPostForm = ({ isOpen, onClose, onSuccess, blogPost }: BlogPostFormProp
         readTime: '5 min read', // Default read time
       };
 
+      console.log('Submitting blog post with payload:', payload);
+      console.log('Using token:', token ? 'Token present' : 'No token');
+
       if (isEditing) {
         await apiClient.updateBlogPost(blogPost.id, payload, token);
         toast({
@@ -79,10 +82,21 @@ const BlogPostForm = ({ isOpen, onClose, onSuccess, blogPost }: BlogPostFormProp
       onSuccess();
       onClose();
       form.reset();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Blog post creation/update error:', error);
+      
+      let errorMessage = `Failed to ${isEditing ? 'update' : 'create'} blog post`;
+      
+      // Check for authentication errors
+      if (error.message?.includes('token') || error.message?.includes('401') || error.message?.includes('403')) {
+        errorMessage = 'Authentication failed. Please log in again.';
+        // Optionally auto-logout the user
+        // useAuthStore.getState().logout();
+      }
+      
       toast({
         title: "Error",
-        description: `Failed to ${isEditing ? 'update' : 'create'} blog post`,
+        description: errorMessage,
         variant: "destructive",
       });
     }

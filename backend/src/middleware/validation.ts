@@ -5,11 +5,17 @@ import { createErrorResponse } from '../utils/helpers';
 export const handleValidation = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   
+  console.log('=== VALIDATION DEBUG ===');
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
+  console.log('Validation errors:', errors.array());
+  
   if (!errors.isEmpty()) {
     const errorMessages = errors.array().map(error => error.msg).join(', ');
+    console.log('Validation failed with messages:', errorMessages);
     return res.status(400).json(createErrorResponse('Validation failed', errorMessages));
   }
   
+  console.log('Validation passed');
   next();
 };
 

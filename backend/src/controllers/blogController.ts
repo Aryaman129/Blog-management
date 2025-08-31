@@ -5,8 +5,14 @@ import { CreateBlogPostRequest, UpdateBlogPostRequest } from '../types';
 
 export const createBlogPost = async (req: Request, res: Response) => {
   try {
+    console.log('=== CREATE BLOG POST DEBUG ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    console.log('Request user:', req.user);
+    console.log('Request headers:', req.headers);
+    
     const userId = req.user?.userId;
     if (!userId) {
+      console.log('ERROR: User not authenticated');
       return res.status(401).json(createErrorResponse('User not authenticated'));
     }
 
@@ -21,6 +27,8 @@ export const createBlogPost = async (req: Request, res: Response) => {
       featured = false,
       published = true,
     }: CreateBlogPostRequest = req.body;
+
+    console.log('Extracted fields:', { title, excerpt, content, author, readTime, category, tags, featured, published });
 
     // Generate slug from title
     let slug = generateSlug(title);
@@ -102,7 +110,17 @@ export const createBlogPost = async (req: Request, res: Response) => {
       updatedAt: completeBlogPost!.updatedAt,
     }));
   } catch (error) {
-    console.error('Create blog post error:', error);
+    console.error('=== CREATE BLOG POST ERROR ===');
+    console.error('Error details:', error);
+    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // Check if it's a Prisma validation error
+    if (error && typeof error === 'object' && 'code' in error) {
+      console.error('Prisma error code:', (error as any).code);
+      console.error('Prisma error meta:', (error as any).meta);
+    }
+    
     res.status(500).json(createErrorResponse('Failed to create blog post'));
   }
 };

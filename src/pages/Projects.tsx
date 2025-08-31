@@ -87,8 +87,7 @@ export default function Projects() {
               {filteredProjects.map((project) => (
                 <ContentCard 
                   key={project.id} 
-                  item={project}
-                  type="project"
+                  content={{ ...project, type: 'project' as const }}
                 />
               ))}
             </div>

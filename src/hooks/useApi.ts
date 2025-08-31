@@ -43,16 +43,18 @@ export const useProjects = (params?: {
   return useItems({ ...params, type: 'project' });
 };
 
-// Hook to fetch a single item by ID
-export const useItem = (id: string | undefined) => {
+// Hook to fetch a single item by slug
+export const useItem = (slug: string | undefined) => {
   return useQuery({
-    queryKey: ['item', id],
+    queryKey: ['item', slug],
     queryFn: async () => {
-      if (!id) throw new Error('ID is required');
-      const response = await apiClient.getItemById(id);
+      if (!slug) {
+        throw new Error('Slug is required');
+      }
+      const response = await apiClient.getItemById(slug);
       return response.data;
     },
-    enabled: !!id,
+    enabled: !!slug,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };
@@ -65,6 +67,7 @@ export const useFeaturedContent = () => {
 // Transform backend data to frontend types
 export const transformBlogPost = (item: any): BlogPost => ({
   id: item.id,
+  slug: item.slug,
   title: item.title,
   excerpt: item.excerpt || item.description,
   content: item.content,
@@ -83,6 +86,7 @@ export const transformBlogPost = (item: any): BlogPost => ({
 
 export const transformProject = (item: any): Project => ({
   id: item.id,
+  slug: item.slug,
   title: item.title,
   description: item.description,
   content: item.content,

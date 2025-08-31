@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Code2, BookOpen, Loader2 } from 'lucide-react';
@@ -16,7 +17,7 @@ const Index = () => {
   // Fetch data from API
   const { data: apiData, isLoading, error } = useItems({
     search: searchQuery || undefined,
-    type: activeFilter !== 'all' ? activeFilter : undefined,
+    type: activeFilter !== 'all' ? activeFilter as 'blog' | 'project' : undefined,
   });
 
   // Transform and memoize content
@@ -111,14 +112,18 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group">
-              <span>View Projects</span>
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-            <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated">
-              <BookOpen className="mr-2 h-4 w-4" />
-              Read Blog
-            </Button>
+            <Link to="/projects">
+              <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group">
+                <span>View Projects</span>
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Link to="/blog">
+              <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Read Blog
+              </Button>
+            </Link>
           </div>
         </section>
 

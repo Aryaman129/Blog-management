@@ -72,13 +72,17 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group">
-              <span>View Projects</span>
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group" asChild>
+              <Link to="/projects">
+                <span>View Projects</span>
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </Button>
-            <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated">
-              <BookOpen className="mr-2 h-4 w-4" />
-              Read Blog
+            <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated" asChild>
+              <Link to="/blog">
+                <BookOpen className="mr-2 h-4 w-4" />
+                Read Blog
+              </Link>
             </Button>
           </div>
         </section>

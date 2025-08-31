@@ -1,137 +1,152 @@
 
+import { Calendar, Clock, User, ExternalLink, Github, Tag, CheckCircle, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Calendar, Clock, User, Tag, ExternalLink, Github, ArrowRight } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BlogPost, Project } from '@/types';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-interface ContentCardProps {
-  content: (BlogPost | Project) & { type: 'blog' | 'project' };
-  featured?: boolean;
+export interface ContentCardProps {
+  item: any;
+  type?: 'blog' | 'project';
 }
 
-export function ContentCard({ content, featured = false }: ContentCardProps) {
-  const isBlog = content.type === 'blog';
-  const project = content as Project;
-  const blog = content as BlogPost;
+export default function ContentCard({ item, type }: ContentCardProps) {
+  // Determine the type if not provided
+  const itemType = type || (item.excerpt ? 'blog' : 'project');
+  
+  // Create the correct navigation path using slug
+  const linkPath = itemType === 'blog' ? `/blog/${item.slug}` : `/project/${item.slug}`;
+
+  const statusIcons = {
+    completed: CheckCircle,
+    'in-progress': Clock,
+    planned: Zap,
+  };
+
+  const statusColors = {
+    completed: "text-green-400 bg-green-500/20 border-green-500/30",
+    'in-progress': "text-yellow-400 bg-yellow-500/20 border-yellow-500/30",
+    planned: "text-blue-400 bg-blue-500/20 border-blue-500/30",
+  };
 
   return (
-    <Card className={cn(
-      "group overflow-hidden border-border/40 bg-card/50 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 hover:border-primary/20 animate-fade-in hover:scale-[1.02]",
-      featured && "ring-1 ring-primary/20 shadow-lg shadow-primary/5"
-    )}>
-      {/* Image Section */}
-      <div className="relative overflow-hidden">
-        <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center transition-all duration-500 group-hover:scale-110">
-          <div className="text-4xl opacity-20 transition-transform duration-500 group-hover:scale-125 group-hover:rotate-12">
-            {isBlog ? '📝' : '💻'}
-          </div>
-        </div>
-        
-        {featured && (
-          <Badge className="absolute top-3 left-3 gradient-primary text-white border-0 animate-pulse">
+    <Card className="group hover:shadow-lg transition-all duration-300 hover:scale-[1.02] bg-card border-border/40 hover:border-primary/40">
+      <CardHeader className="space-y-4">
+        {/* Featured Badge */}
+        {item.featured && (
+          <Badge className="self-start gradient-primary text-white border-0 animate-pulse">
             Featured
           </Badge>
         )}
-        
-        {!isBlog && project.status && (
+
+        {/* Project Status Badge */}
+        {itemType === 'project' && item.status && (
           <Badge 
             variant="secondary" 
-            className={cn(
-              "absolute top-3 right-3 transition-all duration-300 hover:scale-110",
-              project.status === 'completed' && "bg-green-500/20 text-green-400 border-green-500/30",
-              project.status === 'in-progress' && "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-              project.status === 'planned' && "bg-blue-500/20 text-blue-400 border-blue-500/30"
-            )}
+            className={cn("flex items-center space-x-1 self-start hover:scale-110 transition-transform duration-300", statusColors[item.status])}
           >
-            {project.status.replace('-', ' ')}
+            {React.createElement(statusIcons[item.status], { className: "h-3 w-3" })}
+            <span>{item.status.replace('-', ' ')}</span>
           </Badge>
         )}
-      </div>
 
-      <CardHeader className="pb-3">
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-2 opacity-0 animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
-          <Calendar className="h-4 w-4" />
-          <span>{content.date}</span>
-          {isBlog && (
-            <>
-              <span>•</span>
-              <Clock className="h-4 w-4" />
-              <span>{blog.readTime}</span>
-            </>
-          )}
+        {/* Image Placeholder */}
+        <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
+          <div className="text-4xl opacity-20 animate-pulse">
+            {itemType === 'blog' ? '📝' : '💻'}
+          </div>
         </div>
-        
-        <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300 opacity-0 animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-          {content.title}
+
+        {/* Title */}
+        <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors duration-300">
+          {item.title}
         </h3>
-        
-        <p className="text-muted-foreground leading-relaxed opacity-0 animate-fade-in" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
-          {isBlog ? blog.excerpt : project.description}
+
+        {/* Description/Excerpt */}
+        <p className="text-muted-foreground line-clamp-3 group-hover:text-foreground transition-colors duration-300">
+          {itemType === 'blog' ? item.excerpt : item.description}
         </p>
       </CardHeader>
 
-      <CardContent className="pt-0">
-        {/* Tags/Technologies */}
-        <div className="flex flex-wrap gap-2 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-          {(isBlog ? blog.tags : project.technologies).slice(0, 3).map((item, index) => (
-            <Badge 
-              key={item} 
-              variant="secondary" 
-              className="text-xs bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-all duration-300 hover:scale-110"
-              style={{ animationDelay: `${0.5 + index * 0.1}s`, animationFillMode: 'forwards' }}
-            >
-              <Tag className="h-3 w-3 mr-1" />
-              {item}
-            </Badge>
-          ))}
-          {(isBlog ? blog.tags : project.technologies).length > 3 && (
-            <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20 hover:scale-110 transition-transform duration-300">
-              +{(isBlog ? blog.tags : project.technologies).length - 3} more
-            </Badge>
+      <CardContent className="space-y-4">
+        {/* Meta Information */}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+          {itemType === 'blog' && item.author && (
+            <div className="flex items-center space-x-1 hover:text-primary transition-colors duration-300">
+              <User className="h-3 w-3" />
+              <span>{item.author}</span>
+            </div>
           )}
-        </div>
-
-        {/* Author (for blog) */}
-        {isBlog && (
-          <div className="flex items-center space-x-2 mb-4 text-sm text-muted-foreground opacity-0 animate-fade-in" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-            <User className="h-4 w-4" />
-            <span>by {blog.author}</span>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-border/40 opacity-0 animate-fade-in" style={{ animationDelay: '0.7s', animationFillMode: 'forwards' }}>
-          <Link 
-            to={`/${content.type}/${(content as any).slug || content.id}`}
-            className="flex items-center space-x-2 text-primary hover:text-accent transition-all duration-300 group/link hover:scale-105"
-          >
-            <span className="font-medium">Read More</span>
-            <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform duration-300" />
-          </Link>
           
-          {!isBlog && (
-            <div className="flex space-x-2">
-              {project.demoUrl && (
-                <Button size="sm" variant="ghost" className="hover:scale-110 transition-transform duration-300" asChild>
-                  <a href={project.demoUrl} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                </Button>
-              )}
-              {project.githubUrl && (
-                <Button size="sm" variant="ghost" className="hover:scale-110 transition-transform duration-300" asChild>
-                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
-                    <Github className="h-4 w-4" />
-                  </a>
-                </Button>
-              )}
+          <div className="flex items-center space-x-1 hover:text-primary transition-colors duration-300">
+            <Calendar className="h-3 w-3" />
+            <span>{item.date}</span>
+          </div>
+
+          {itemType === 'blog' && item.readTime && (
+            <div className="flex items-center space-x-1 hover:text-primary transition-colors duration-300">
+              <Clock className="h-3 w-3" />
+              <span>{item.readTime}</span>
+            </div>
+          )}
+
+          {item.category && (
+            <div className="flex items-center space-x-1 hover:text-primary transition-colors duration-300">
+              <Tag className="h-3 w-3" />
+              <span>{item.category}</span>
             </div>
           )}
         </div>
+
+        {/* Tags/Technologies */}
+        <div className="flex flex-wrap gap-2">
+          {(itemType === 'blog' ? item.tags : item.technologies)?.slice(0, 3).map((tag: string, index: number) => (
+            <Badge 
+              key={tag} 
+              variant="secondary" 
+              className="bg-surface hover:bg-surface-elevated transition-all duration-300 hover:scale-110"
+              style={{ animationDelay: `${index * 0.1}s` }}
+            >
+              {tag}
+            </Badge>
+          ))}
+          {(itemType === 'blog' ? item.tags?.length : item.technologies?.length) > 3 && (
+            <Badge variant="secondary" className="bg-surface text-muted-foreground">
+              +{(itemType === 'blog' ? item.tags.length : item.technologies.length) - 3} more
+            </Badge>
+          )}
+        </div>
       </CardContent>
+
+      <CardFooter className="flex justify-between items-center">
+        {/* Read More / View Project Button */}
+        <Button asChild className="flex-1 mr-2 hover:scale-105 transition-transform duration-300">
+          <Link to={linkPath}>
+            {itemType === 'blog' ? 'Read More' : 'View Project'}
+          </Link>
+        </Button>
+
+        {/* Project External Links */}
+        {itemType === 'project' && (
+          <div className="flex space-x-2">
+            {item.demoUrl && (
+              <Button size="sm" variant="ghost" className="hover:scale-110 transition-transform duration-300" asChild>
+                <a href={item.demoUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+            {item.githubUrl && (
+              <Button size="sm" variant="ghost" className="hover:scale-110 transition-transform duration-300" asChild>
+                <a href={item.githubUrl} target="_blank" rel="noopener noreferrer">
+                  <Github className="h-4 w-4" />
+                </a>
+              </Button>
+            )}
+          </div>
+        )}
+      </CardFooter>
     </Card>
   );
 }

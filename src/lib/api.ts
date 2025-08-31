@@ -82,9 +82,13 @@ class ApiClient {
 
   // Authentication methods
   async login(credentials: { username: string; password: string }): Promise<ApiResponse<{ token: string; user: any }>> {
+    // Convert username to email format for the backend
     return this.request<{ token: string; user: any }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      body: JSON.stringify({
+        email: credentials.username, // Backend expects email field
+        password: credentials.password
+      }),
     });
   }
 

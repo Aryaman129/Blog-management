@@ -96,11 +96,7 @@ export function Footer() {
             © {currentYear} TechHub. A community-driven platform for developers.
           </div>
           
-          <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-4 md:mt-0">
-            <span>Built with</span>
-            <Heart className="h-4 w-4 text-red-500 mx-1" />
-            <span>by the community</span>
-          </div>
+          
         </div>
       </div>
     </footer>;

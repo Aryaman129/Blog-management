@@ -62,6 +62,7 @@ const AdminLogin = () => {
                   type="email"
                   placeholder="Enter your email"
                   className="pl-10"
+                  autoComplete="email"
                   value={loginForm.username}
                   onChange={(e) => setLoginForm({ ...loginForm, username: e.target.value })}
                   required
@@ -77,6 +78,7 @@ const AdminLogin = () => {
                   type="password"
                   placeholder="Enter your password"
                   className="pl-10"
+                  autoComplete="current-password"
                   value={loginForm.password}
                   onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                   required

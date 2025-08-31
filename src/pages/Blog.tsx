@@ -19,10 +19,7 @@ export default function Blog() {
   const filteredPosts = useMemo(() => {
     if (!apiData) return [];
     
-    return apiData.map((post: any) => ({
-      ...transformBlogPost(post),
-      type: 'blog' as const
-    }));
+    return apiData.map((post: any) => transformBlogPost(post));
   }, [apiData]);
 
   // Handle loading state
@@ -90,7 +87,8 @@ export default function Blog() {
               {filteredPosts.map((post) => (
                 <ContentCard 
                   key={post.id} 
-                  content={post}
+                  item={post}
+                  type="blog"
                 />
               ))}
             </div>

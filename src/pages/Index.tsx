@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Code2, BookOpen } from 'lucide-react';
@@ -9,57 +8,36 @@ import { ContentCard } from '@/components/ContentCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { allContent } from '@/data/content';
 import { FilterOption } from '@/types';
-
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterOption>('all');
-
   const filteredContent = useMemo(() => {
     let filtered = allContent;
 
     // Apply search filter
     if (searchQuery) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        ('excerpt' in item ? item.excerpt : item.description).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (item.type === 'blog' ? item.tags : item.technologies).some(tag =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
+      filtered = filtered.filter(item => item.title.toLowerCase().includes(searchQuery.toLowerCase()) || ('excerpt' in item ? item.excerpt : item.description).toLowerCase().includes(searchQuery.toLowerCase()) || (item.type === 'blog' ? item.tags : item.technologies).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())));
     }
 
     // Apply category filter
     if (activeFilter !== 'all') {
       filtered = filtered.filter(item => item.type === activeFilter);
     }
-
     return filtered;
   }, [searchQuery, activeFilter]);
-
-  const featuredContent = useMemo(() => 
-    allContent.filter(item => 'featured' in item && item.featured).slice(0, 2),
-    []
-  );
-
+  const featuredContent = useMemo(() => allContent.filter(item => 'featured' in item && item.featured).slice(0, 2), []);
   const counts = useMemo(() => ({
     all: allContent.length,
     blog: allContent.filter(item => item.type === 'blog').length,
-    project: allContent.filter(item => item.type === 'project').length,
+    project: allContent.filter(item => item.type === 'project').length
   }), []);
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Navbar onSearch={setSearchQuery} />
       
       <main className="container mx-auto px-4 py-12">
         {/* Hero Section */}
         <section className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center space-x-2 bg-surface-elevated/50 border border-border/40 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="h-4 w-4 text-primary animate-pulse" />
-            <span className="text-sm font-medium text-muted-foreground">
-              Welcome to my digital space
-            </span>
-          </div>
+          
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Building the Future with{' '}
@@ -72,40 +50,28 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group" asChild>
-              <Link to="/projects">
-                <span>View Projects</span>
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
+            <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group">
+              <span>View Projects</span>
+              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated" asChild>
-              <Link to="/blog">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Read Blog
-              </Link>
+            <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated">
+              <BookOpen className="mr-2 h-4 w-4" />
+              Read Blog
             </Button>
           </div>
         </section>
 
         {/* Featured Content */}
-        {featuredContent.length > 0 && (
-          <section className="mb-16 animate-slide-up">
+        {featuredContent.length > 0 && <section className="mb-16 animate-slide-up">
             <div className="flex items-center space-x-2 mb-8">
               <Sparkles className="h-5 w-5 text-primary" />
               <h2 className="text-2xl font-bold">Featured Content</h2>
             </div>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {featuredContent.map((content) => (
-                <ContentCard 
-                  key={content.id} 
-                  content={content} 
-                  featured 
-                />
-              ))}
+              {featuredContent.map(content => <ContentCard key={content.id} content={content} featured />)}
             </div>
-          </section>
-        )}
+          </section>}
 
         {/* Filter and Content Section */}
         <section className="animate-slide-up">
@@ -116,40 +82,22 @@ const Index = () => {
             </div>
           </div>
           
-          <FilterTabs 
-            activeFilter={activeFilter}
-            onFilterChange={setActiveFilter}
-            counts={counts}
-          />
+          <FilterTabs activeFilter={activeFilter} onFilterChange={setActiveFilter} counts={counts} />
           
           {/* Content Grid */}
-          {filteredContent.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredContent.map((content) => (
-                <ContentCard 
-                  key={content.id} 
-                  content={content}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
+          {filteredContent.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredContent.map(content => <ContentCard key={content.id} content={content} />)}
+            </div> : <div className="text-center py-12">
               <Code2 className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
               <h3 className="text-xl font-semibold mb-2">No content found</h3>
               <p className="text-muted-foreground">
-                {searchQuery 
-                  ? `No results found for "${searchQuery}"`
-                  : 'No content matches your current filter'
-                }
+                {searchQuery ? `No results found for "${searchQuery}"` : 'No content matches your current filter'}
               </p>
-            </div>
-          )}
+            </div>}
         </section>
       </main>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

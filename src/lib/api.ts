@@ -473,15 +473,15 @@ class ApiClient {
     }
   }
 
-  // Get single item by ID with fallback
-  async getItemById(id: string): Promise<ApiResponse<any>> {
+  // Get single item by slug with fallback
+  async getItemById(slug: string): Promise<ApiResponse<any>> {
     try {
-      return await this.request<any>(`/items/${id}`);
+      return await this.request<any>(`/items/${slug}`);
     } catch (error) {
       console.warn('API not available, using fallback data');
       // Try to find in fallback data
       const allFallbackData = [...fallbackBlogPosts, ...fallbackProjects];
-      const item = allFallbackData.find(item => item.id === id || item.slug === id);
+      const item = allFallbackData.find(item => item.id === slug || item.slug === slug);
       
       if (item) {
         return {

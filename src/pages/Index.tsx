@@ -102,26 +102,26 @@ const Index = () => {
           
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            Building the Future with{' '}
-            <span className="text-gradient">Modern Web Tech</span>
+            Discover Tech Insights &{' '}
+            <span className="text-gradient">Project Showcases</span>
           </h1>
           
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed">
-            Explore my journey in web development through detailed project showcases, 
-            technical insights, and lessons learned from building modern applications.
+            A curated collection of technical articles, project walkthroughs, and developer insights 
+            from the community. Explore, learn, and get inspired by what others are building.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/projects">
               <Button size="lg" className="gradient-primary text-white shadow-lg hover:shadow-xl transition-all group">
-                <span>View Projects</span>
+                <span>Browse Projects</span>
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
             <Link to="/blog">
               <Button variant="outline" size="lg" className="border-border hover:bg-surface-elevated">
                 <BookOpen className="mr-2 h-4 w-4" />
-                Read Blog
+                Read Articles
               </Button>
             </Link>
           </div>

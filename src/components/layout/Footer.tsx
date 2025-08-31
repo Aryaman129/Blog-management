@@ -39,8 +39,12 @@ export function Footer() {
               <div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Code2 className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-bold text-gradient">DevFolio</span>
+              <span className="text-xl font-bold text-gradient">TechHub</span>
             </Link>
+            
+            <p className="text-muted-foreground mb-4 max-w-md">
+              A platform for sharing technical insights, project showcases, and knowledge across the developer community.
+            </p>
             
             <div className="flex space-x-2">
               {socialLinks.map(({
@@ -72,14 +76,14 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Get in Touch</h3>
+            <h3 className="font-semibold text-foreground mb-4">Get Involved</h3>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>Have a project in mind?</p>
-              <p>Let's build something amazing together.</p>
+              <p>Want to contribute content?</p>
+              <p>Share your projects and insights with the community.</p>
               <Button variant="outline" size="sm" className="mt-4 border-primary/20 hover:bg-primary hover:text-white transition-colors" asChild>
-                <a href="mailto:contact@example.com">
+                <a href="mailto:contribute@example.com">
                   <Mail className="h-4 w-4 mr-2" />
-                  Get in Touch
+                  Contribute
                 </a>
               </Button>
             </div>
@@ -88,8 +92,15 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="mt-12 pt-8 border-t border-border/40 flex flex-col md:flex-row justify-between items-center">
+          <div className="text-sm text-muted-foreground">
+            © {currentYear} TechHub. A community-driven platform for developers.
+          </div>
           
-          
+          <div className="flex items-center space-x-1 text-sm text-muted-foreground mt-4 md:mt-0">
+            <span>Built with</span>
+            <Heart className="h-4 w-4 text-red-500 mx-1" />
+            <span>by the community</span>
+          </div>
         </div>
       </div>
     </footer>;

@@ -42,7 +42,7 @@ export function Navbar({ onSearch }: NavbarProps) {
             <div className="h-8 w-8 rounded-lg gradient-primary flex items-center justify-center group-hover:scale-110 transition-transform">
               <Code2 className="h-4 w-4 text-white" />
             </div>
-            <span className="text-xl font-bold text-gradient">DevFolio</span>
+            <span className="text-xl font-bold text-gradient">TechHub</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -71,7 +71,7 @@ export function Navbar({ onSearch }: NavbarProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search posts and projects..."
+                placeholder="Search articles and projects..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-10 bg-surface border-border/40 focus:border-primary/50 transition-colors"
@@ -107,7 +107,7 @@ export function Navbar({ onSearch }: NavbarProps) {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
-                placeholder="Search posts and projects..."
+                placeholder="Search articles and projects..."
                 value={searchQuery}
                 onChange={handleSearchChange}
                 className="pl-10 bg-surface border-border/40"

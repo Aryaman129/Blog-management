@@ -1,3 +1,4 @@
+
 const API_BASE_URL = 'http://localhost:8000/api';
 
 export interface ApiResponse<T> {
@@ -479,9 +480,20 @@ class ApiClient {
       return await this.request<any>(`/items/${slug}`);
     } catch (error) {
       console.warn('API not available, using fallback data');
+      console.log('Searching for item with ID/slug:', slug);
+      
       // Try to find in fallback data
       const allFallbackData = [...fallbackBlogPosts, ...fallbackProjects];
-      const item = allFallbackData.find(item => item.id === slug || item.slug === slug);
+      
+      // Try multiple matching strategies
+      const item = allFallbackData.find(item => 
+        item.id === slug || 
+        item.slug === slug ||
+        String(item.id) === slug ||
+        (item.slug && item.slug.toLowerCase() === slug.toLowerCase())
+      );
+      
+      console.log('Found fallback item:', item);
       
       if (item) {
         return {

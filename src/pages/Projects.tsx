@@ -19,10 +19,7 @@ export default function Projects() {
   const filteredProjects = useMemo(() => {
     if (!apiData) return [];
     
-    return apiData.map((project: any) => ({
-      ...transformProject(project),
-      type: 'project' as const
-    }));
+    return apiData.map((project: any) => transformProject(project));
   }, [apiData]);
 
   // Handle loading state
@@ -90,7 +87,8 @@ export default function Projects() {
               {filteredProjects.map((project) => (
                 <ContentCard 
                   key={project.id} 
-                  content={project}
+                  item={project}
+                  type="project"
                 />
               ))}
             </div>

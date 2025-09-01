@@ -11,6 +11,7 @@ import itemRoutes from './routes/items';
 import blogRoutes from './routes/blog';
 import projectRoutes from './routes/projects';
 import uploadRoutes from './routes/upload';
+import seedRoutes from './routes/seed';
 
 // Import middleware
 import { errorHandler } from './middleware/validation';
@@ -115,6 +116,7 @@ app.use('/api/items', itemRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/admin', seedRoutes); // Protected admin routes
 
 // Root route - API status
 app.get('/', (req, res) => {
@@ -127,7 +129,8 @@ app.get('/', (req, res) => {
       blog: '/api/blog',
       projects: '/api/projects',
       items: '/api/items',
-      upload: '/api/upload'
+      upload: '/api/upload',
+      admin: '/api/admin'
     },
     timestamp: new Date().toISOString()
   });

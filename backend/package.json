@@ -7,11 +7,14 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "tsc",
+    "build": "npm run db:generate && npm run db:deploy && tsc",
+    "build:production": "npm install && npm run db:generate && npm run db:deploy && npm run db:seed:prod && tsc",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:deploy": "prisma db push --accept-data-loss",
     "db:migrate": "prisma migrate dev",
     "db:seed": "ts-node --project tsconfig.seed.json prisma/seed.ts",
+    "db:seed:prod": "node -r ts-node/register --project tsconfig.seed.json prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

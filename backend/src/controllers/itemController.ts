@@ -193,8 +193,13 @@ export const getItems = async (req: Request, res: Response) => {
       hasMore,
     }));
   } catch (error) {
-    console.error('Get items error:', error);
-    res.status(500).json(createErrorResponse('Failed to retrieve items'));
+    console.error('❌ Get items error:', error);
+    console.error('Error details:', {
+      name: (error as Error).name,
+      message: (error as Error).message,
+      stack: (error as Error).stack?.split('\n')[0]
+    });
+    res.status(500).json(createErrorResponse(`Failed to retrieve items: ${(error as Error).message}`));
   }
 };
 

@@ -29,11 +29,10 @@ app.use(helmet({
 
 // CORS configuration
 const allowedOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim().replace(/\/$/, ''))
   : [
     'http://localhost:8080', 
     'https://blog-management-ashen.vercel.app',
-    'https://blog-management-ashen.vercel.app/',
     'https://your-app.vercel.app'
   ];
 
@@ -42,9 +41,14 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    // Remove trailing slash from origin for comparison
+    const normalizedOrigin = origin.replace(/\/$/, '');
+    
+    if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.log(`❌ CORS blocked origin: ${origin}`);
+      console.log(`📝 Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS'), false);
     }
   },

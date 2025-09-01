@@ -94,6 +94,33 @@ app.use('/api/blog', blogRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/upload', uploadRoutes);
 
+// Root route - API status
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Mosaic Paths API is running',
+    version: '1.0.0',
+    endpoints: {
+      auth: '/api/auth',
+      blog: '/api/blog',
+      projects: '/api/projects',
+      items: '/api/items',
+      upload: '/api/upload'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Server is healthy',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({

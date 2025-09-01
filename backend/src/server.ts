@@ -21,6 +21,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// Trust proxy for Render deployment
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', true);
+}
+
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
@@ -36,6 +41,12 @@ const allowedOrigins = process.env.CORS_ORIGIN
     'https://your-app.vercel.app'
   ];
 
+// Add support for all Vercel preview deployments
+const isVercelPreview = (origin: string) => {
+  return origin.includes('vercel.app') && 
+         (origin.includes('blog-management') || origin.includes('barryalline'));
+};
+
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allowed?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps, Postman, etc.)
@@ -44,7 +55,9 @@ const corsOptions = {
     // Remove trailing slash from origin for comparison
     const normalizedOrigin = origin.replace(/\/$/, '');
     
-    if (allowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(normalizedOrigin) || 
+        allowedOrigins.includes(origin) || 
+        isVercelPreview(origin)) {
       callback(null, true);
     } else {
       console.log(`❌ CORS blocked origin: ${origin}`);

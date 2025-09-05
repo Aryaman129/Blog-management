@@ -16,6 +16,11 @@ export const createBlogPost = async (req: Request, res: Response) => {
       return res.status(401).json(createErrorResponse('User not authenticated'));
     }
 
+    // Test database connection
+    console.log('Testing database connection...');
+    const userCount = await prisma.user.count();
+    console.log('Database test successful, user count:', userCount);
+
     const {
       title,
       excerpt,
@@ -30,19 +35,35 @@ export const createBlogPost = async (req: Request, res: Response) => {
 
     console.log('Extracted fields:', { title, excerpt, content, author, readTime, category, tags, featured, published });
 
+    // Validate required fields
+    if (!title || !excerpt || !content || !author || !category) {
+      console.log('ERROR: Missing required fields');
+      return res.status(400).json(createErrorResponse('Missing required fields: title, excerpt, content, author, category'));
+    }
+
+    console.log('Starting blog post creation...');
+
     // Generate slug from title
     let slug = generateSlug(title);
+    console.log('Generated slug:', slug);
     
     // Check if slug exists and make it unique
+    console.log('Checking for existing slug...');
     const existingPost = await prisma.blogPost.findUnique({ where: { slug } });
     if (existingPost) {
       slug = `${slug}-${Date.now()}`;
+      console.log('Slug exists, using unique slug:', slug);
     }
 
     // Calculate read time if not provided
     const finalReadTime = readTime || calculateReadTime(content);
+    console.log('Final read time:', finalReadTime);
 
     // Create blog post
+    console.log('Creating blog post with data:', {
+      title, slug, excerpt, content, author, readTime: finalReadTime, category, featured, published, userId
+    });
+    
     const blogPost = await prisma.blogPost.create({
       data: {
         title,
@@ -57,10 +78,14 @@ export const createBlogPost = async (req: Request, res: Response) => {
         userId,
       },
     });
+    
+    console.log('Blog post created successfully, ID:', blogPost.id);
 
     // Handle tags
     if (tags && tags.length > 0) {
+      console.log('Processing tags:', tags);
       for (const tagName of tags) {
+        console.log('Processing tag:', tagName);
         // Create tag if it doesn't exist
         const tag = await prisma.tag.upsert({
           where: { name: tagName },
@@ -70,6 +95,7 @@ export const createBlogPost = async (req: Request, res: Response) => {
             slug: generateSlug(tagName),
           },
         });
+        console.log('Tag processed:', tag.id);
 
         // Create association
         await prisma.tagOnBlogPost.create({
@@ -78,7 +104,10 @@ export const createBlogPost = async (req: Request, res: Response) => {
             tagId: tag.id,
           },
         });
+        console.log('Tag association created');
       }
+    } else {
+      console.log('No tags to process');
     }
 
     // Fetch the complete blog post with relations

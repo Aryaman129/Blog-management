@@ -22,9 +22,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// Trust proxy for Render deployment
+// Trust proxy for Render deployment - use specific proxy setting
 if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1); // Trust first proxy (Render's load balancer)
 }
 
 // Security middleware
@@ -80,6 +80,8 @@ const limiter = rateLimit({
     success: false,
     message: 'Too many requests from this IP, please try again later.',
   },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 app.use('/api/', limiter);
 
@@ -91,6 +93,8 @@ const authLimiter = rateLimit({
     success: false,
     message: 'Too many authentication attempts, please try again later.',
   },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // Body parsing middleware
